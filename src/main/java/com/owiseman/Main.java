@@ -60,7 +60,7 @@ public class Main {
             try {
                 PdfToMarkdownConverter converter = new PdfToMarkdownConverter();
            
-                PdfBlockDto pdfBlockDto = converter.convert("2024-Aligning Large Language Models with Humans.pdf", blocks);
+                PdfBlockDto pdfBlockDto = converter.convert("assert/2024-Aligning Large Language Models with Humans.pdf", blocks);
               
                 Files.write(Paths.get("src/main/resources/output.md"), pdfBlockDto.getMarkdownString().getBytes());
             } catch (IOException e) {

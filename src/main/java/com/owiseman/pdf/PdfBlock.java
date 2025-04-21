@@ -23,10 +23,9 @@ public class PdfBlock {
         stripper.setSortByPosition(true);
 
         // 坐标系转换：左下角原点 → 左上角原点
-        double pageHeight = page.getMediaBox().getHeight();
         var pc =  getCoordinates();
         Rectangle2D region = new Rectangle2D.Double(
-          pc[0]/2, pc[1]/2, pc[2]/2, (pc[3]-pc[1])/2
+          pc[0]/2, pc[1]/2, getWidth(), getHeight()
         );
 
         stripper.addRegion("region", region);
@@ -38,7 +37,7 @@ public class PdfBlock {
         return (coordinates[3] - coordinates[1])/2;
     }
 
-
+    public double getWidth() { return coordinates[2] / 2;  }
 
     public String getType() {
         return type;

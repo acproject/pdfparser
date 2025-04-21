@@ -37,8 +37,11 @@ public class PdfToMarkdownConverter {
                          titleLevel= "#### ";
                         else if (block.getHeight() < 8)
                          titleLevel= "##### ";
-                        if (block.getExtractedText().contains("\n")) {
-                            md.append(titleLevel).append(block.getExtractedText().replaceAll("\n", " " )).append("\n");
+                        if (block.getExtractedText().contains("\r") || block.getExtractedText().contains("\n")) {
+                            var extStr = block.getExtractedText().replaceAll("\r", " ");
+                            extStr = extStr.replaceAll("\n", " ");
+                            extStr = extStr.replaceAll(" {2}", " ");
+                            md.append(titleLevel).append(extStr).append("\n");
                         }else {
                             md.append(titleLevel).append(block.getExtractedText()).append("\n\n");
                         }
@@ -62,8 +65,8 @@ public class PdfToMarkdownConverter {
             
             // 判断块是在左侧还是右侧
             // 如果块的x坐标加宽度超过中心，则认为是左侧块
-            boolean isBlock1Left = coords1[0] + coords1[2] > pageCenterX;
-            boolean isBlock2Left = coords2[0] + coords2[2] > pageCenterX;
+            boolean isBlock1Left = coords1[0]  < pageCenterX || coords1[2] > pageCenterX ;
+            boolean isBlock2Left = coords2[0]  < pageCenterX ||  coords2[2] > pageCenterX;
             
             // 如果两个块都在左侧或都在右侧，则按y坐标升序排序
             if (isBlock1Left == isBlock2Left) {
