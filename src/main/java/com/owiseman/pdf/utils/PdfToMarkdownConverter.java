@@ -1,5 +1,6 @@
 package com.owiseman.pdf.utils;
 
+import com.owiseman.pdf.Enum.Alignment;
 import com.owiseman.pdf.PdfBlock;
 import com.owiseman.pdf.dto.PdfBlockDto;
 
@@ -7,13 +8,21 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.text.PDFTextStripperByArea;
+import technology.tabula.ObjectExtractor;
+import technology.tabula.Page;
+import technology.tabula.Rectangle;
+import technology.tabula.RectangularTextContainer;
+import technology.tabula.Table;
+import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 public class PdfToMarkdownConverter {
-    public PdfBlockDto convert(String pdfPath, List<PdfBlock> blocks) throws IOException {
+    public PdfBlockDto convert(String pdfPath, List<PdfBlock> blocks, int pageNumber) throws IOException {
         StringBuilder md = new StringBuilder();
         PdfBlockDto pdfBlockDto =  new PdfBlockDto();
         try (PDDocument document = Loader.loadPDF(new RandomAccessReadBufferedFile(Paths.get(pdfPath).toFile()));) {
@@ -21,7 +30,7 @@ public class PdfToMarkdownConverter {
             var sortedBlocks =    sortBlocks(blocks, document.getPage(0).getMediaBox().getWidth());
             for (PdfBlock block : sortedBlocks) {
                 // 按页面号匹配（假设 blocks 已按页面分组）
-                PDPage page = document.getPage(0); // 示例仅处理第一页
+                PDPage page = document.getPage(pageNumber); // 示例仅处理第一页
                 block.extractTextFromPage(page);
                 String titleLevel = "";
                 // 生成 Markdown
@@ -50,6 +59,11 @@ public class PdfToMarkdownConverter {
                     case "plain text" -> {
                         md.append(block.getExtractedText()).append("\n\n");
                     }
+
+                    case "table" -> {
+                       md.append(pdfBoxTableExtractor(block, pdfBlockDto.getDocument(),pageNumber))
+                               .append("\n\n");
+                    }
                 }
             }
         }
@@ -58,7 +72,6 @@ public class PdfToMarkdownConverter {
     }
 
     private List<PdfBlock> sortBlocks(List<PdfBlock> blocks, float pageCenterX) {
-        System.out.println("pageCenterX = "+ pageCenterX);
         blocks.sort((block1, block2) -> {
             double[] coords1 = block1.getCoordinates();
             double[] coords2 = block2.getCoordinates();
@@ -78,5 +91,86 @@ public class PdfToMarkdownConverter {
         });
         return blocks;
       
+    }
+    /// ////////// 下面是处理表格的逻辑
+
+    // 每次只处理一个表格
+    private Table extractTablesFromPdfPage(PDDocument document, int pageNumber, PdfBlock pdfBlock)
+    {
+        ObjectExtractor oe = new ObjectExtractor(document);
+        Page pageIterator = oe.extract(pageNumber);
+        Rectangle area = new Rectangle(
+                (float) pdfBlock.getX(),
+                (float) pdfBlock.getY(),
+                (float) pdfBlock.getWidth(),
+                (float) ((pdfBlock.getHeight())));
+        SpreadsheetExtractionAlgorithm spreadsheetExtractionAlgorithm = new SpreadsheetExtractionAlgorithm();
+
+        Table table = spreadsheetExtractionAlgorithm.extract(pageIterator.getArea(area)).getFirst();
+        return table;
+    }
+
+    public static String convertTableToMarkdownString(Table table) {
+        StringBuilder sb = new StringBuilder();
+        List<List<RectangularTextContainer>> rows = table.getRows();
+        // 1. 处理表头（这里假设第一行为表头）
+        if (!rows.isEmpty()) {
+            List<RectangularTextContainer> headerRow = rows.get(0);
+            sb.append(buildMergedCell(headerRow));
+            sb.append(buildHeaderSeparator(headerRow.size(), Alignment.LEFT));
+        }
+
+        // 处理数据
+        for (int i = 1; i < rows.size(); i++) {
+            sb.append(buildMergedCell(rows.get(i)));
+        }
+        return sb.toString();
+    }
+
+    // 处理表头
+    private static String buildHeaderSeparator(int columnCount, Alignment alignment) {
+        String symbol = switch (alignment) {
+            case LEFT -> ":---";
+            case CENTER -> ":---:";
+            case RIGHT -> "---:";
+
+        };
+        return "|" + String.join("|", Collections.nCopies(columnCount, symbol)) + "|\n";
+    }
+
+    // 处理合并单元格
+    private static String buildMergedCell(List<RectangularTextContainer> cells) {
+        StringBuilder row = new StringBuilder("|");
+        for (RectangularTextContainer cell : cells) {
+            String text = cell.getText().isEmpty()? " " : cell.getText(); // 空单元格填充空格
+            text = text.replace("|", "\\|");
+            row.append(text).append("|");
+        }
+        return row.append("\n").toString();
+    }
+
+    // 自动判断表头行
+    private static boolean isHeader(List<RectangularTextContainer> row) {
+        return row.stream().anyMatch(cell -> cell.getText().matches(".*[A-Z].*")); // 包含大写字母
+    }
+
+    private static String pdfBoxTableExtractor(PdfBlock pdfBlock, PDDocument document,int pageNumber) {
+        Rectangle tableArea = new Rectangle(
+                (float) pdfBlock.getCoordinates()[0]/2,
+                (float) pdfBlock.getCoordinates()[1]/2,
+                (float) pdfBlock.getCoordinates()[2]/2,
+                (float) ((pdfBlock.getCoordinates()[3]-pdfBlock.getCoordinates()[1])/2)
+        );
+        String tableText = "";
+        try {
+            PDFTextStripperByArea stripper = new PDFTextStripperByArea();
+            stripper.addRegion("table", tableArea);
+            stripper.extractRegions(document.getPage(pageNumber));
+            tableText = stripper.getTextForRegion("table");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return tableText;
     }
 }

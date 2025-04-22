@@ -37,6 +37,14 @@ public class PdfBlock {
         return (coordinates[3] - coordinates[1])/2;
     }
 
+    public double getX() {
+        return coordinates[0] / 2;
+    }
+
+    public double getY() {
+        return coordinates[1] / 2;
+    }
+
     public double getWidth() { return coordinates[2] / 2;  }
 
     public String getType() {
