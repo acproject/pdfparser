@@ -34,15 +34,16 @@ public class Main {
             // System.out.println("h:" + (281-208)/2);
             // [101, 208, 939, 281]
             String jsonText = """
-                  [{'type': 'plain text', 'coordinates': [101, 1311, 579, 1409], 'confidence': 0.974492073059082}, {'type': 'figure', 'coordinates': [103, 110, 1086, 1149], 'confidence': 0.973132312297821}, {'type': 'plain text', 'coordinates': [611, 1311, 1091, 1409], 'confidence': 0.9690294861793518}, {'type': 'figure_caption', 'coordinates': [99, 1178, 580, 1279], 'confidence': 0.9675584435462952}, {'type': 'abandon', 'coordinates': [998, 65, 1089, 81], 'confidence': 0.9267799854278564}, {'type': 'abandon', 'coordinates': [101, 1475, 154, 1493], 'confidence': 0.8843650817871094}, {'type': 'figure_caption', 'coordinates': [611, 1178, 1090, 1279], 'confidence': 0.819067120552063}]
+                    [{'type': 'plain text', 'coordinates': [109, 487, 576, 794], 'confidence': 0.9844850301742554}, {'type': 'plain text', 'coordinates': [109, 799, 576, 981], 'confidence': 0.9830796718597412}, {'type': 'plain text', 'coordinates': [110, 986, 576, 1107], 'confidence': 0.9805922508239746}, {'type': 'plain text', 'coordinates': [614, 550, 1082, 827], 'confidence': 0.9783114790916443}, {'type': 'plain text', 'coordinates': [615, 456, 1079, 545], 'confidence': 0.9729617834091187}, {'type': 'title', 'coordinates': [109, 456, 430, 482], 'confidence': 0.9532263278961182}, {'type': 'figure_caption', 'coordinates': [109, 1139, 455, 1163], 'confidence': 0.9165716171264648}, {'type': 'abandon', 'coordinates': [368, 56, 818, 76], 'confidence': 0.9140169620513916}, {'type': 'abandon', 'coordinates': [119, 56, 181, 75], 'confidence': 0.7938159704208374}, {'type': 'table_caption', 'coordinates': [108, 112, 459, 135], 'confidence': 0.7721415162086487}, {'type': 'figure_caption', 'coordinates': [615, 858, 988, 881], 'confidence': 0.6703601479530334}, {'type': 'table', 'coordinates': [110, 136, 1078, 431], 'confidence': 0.65052330493927}, {'type': 'table', 'coordinates': [615, 885, 1079, 1105], 'confidence': 0.6009944081306458}, {'type': 'figure', 'coordinates': [615, 885, 1079, 1105], 'confidence': 0.5729338526725769}, {'type': 'table_caption', 'coordinates': [615, 858, 988, 881], 'confidence': 0.5079803466796875}, {'type': 'figure', 'coordinates': [110, 1164, 1079, 1481], 'confidence': 0.48604366183280945}, {'type': 'table', 'coordinates': [110, 1164, 1079, 1481], 'confidence': 0.3295596241950989}, {'type': 'table', 'coordinates': [112, 1371, 1078, 1480], 'confidence': 0.28874385356903076}, {'type': 'abandon', 'coordinates': [82, 1625, 871, 1650], 'confidence': 0.27455514669418335}, {'type': 'figure_caption', 'coordinates': [108, 112, 459, 135], 'confidence': 0.2566336989402771}]
                     """;
             List<PdfBlock> blocks = JsonToPdfBlockParser.parse(jsonText.replace("'", "\""));
-           
+
             try {
                 PdfToMarkdownConverter converter = new PdfToMarkdownConverter();
-           
-                PdfBlockDto pdfBlockDto = converter.convert("assert/2024-Aligning Large Language Models with Humans.pdf", blocks, 3);
-              
+
+                PdfBlockDto pdfBlockDto = converter.convert("assert/Ref20.pdf", blocks, 6);
+
+
                 Files.write(Paths.get("src/main/resources/output.md"), pdfBlockDto.getMarkdownString().getBytes());
             } catch (IOException e) {
                 e.printStackTrace();

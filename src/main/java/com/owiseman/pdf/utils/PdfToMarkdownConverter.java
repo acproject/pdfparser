@@ -19,6 +19,7 @@ import technology.tabula.Page;
 import technology.tabula.Rectangle;
 import technology.tabula.RectangularTextContainer;
 import technology.tabula.Table;
+import technology.tabula.extractors.BasicExtractionAlgorithm;
 import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
 
 import javax.imageio.ImageIO;
@@ -121,7 +122,7 @@ public class PdfToMarkdownConverter {
                 (float) pdfBlock.getY(),
                 (float) pdfBlock.getWidth(),
                 (float) ((pdfBlock.getHeight())));
-        SpreadsheetExtractionAlgorithm spreadsheetExtractionAlgorithm = new SpreadsheetExtractionAlgorithm();
+        BasicExtractionAlgorithm spreadsheetExtractionAlgorithm = new BasicExtractionAlgorithm();
 
         Table table = spreadsheetExtractionAlgorithm.extract(pageIterator.getArea(area)).getFirst();
         return table;
@@ -275,6 +276,8 @@ public class PdfToMarkdownConverter {
         }
         return null;
     }
+
+    /// /////////// 处理矢量图的部分
 
     /// /////////// 下面的部分是用来处理公式的
 }
