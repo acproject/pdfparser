@@ -29,7 +29,7 @@ public class Main {
             // String text = stripper.getTextForRegion("region");
 
             // System.out.println("Page Height: " + pageHeight);
-            // System.out.println("Page Width: " + pageWidth);
+            // System.out.println("Page Width: " + pageWidth); //595.276
             // System.out.println("Text: " + text);
             // System.out.println("h:" + (281-208)/2);
             // [101, 208, 939, 281]

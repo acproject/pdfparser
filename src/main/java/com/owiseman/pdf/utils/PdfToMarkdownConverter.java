@@ -58,15 +58,15 @@ public class PdfToMarkdownConverter {
     }
 
     private List<PdfBlock> sortBlocks(List<PdfBlock> blocks, float pageCenterX) {
-
+        System.out.println("pageCenterX = "+ pageCenterX);
         blocks.sort((block1, block2) -> {
             double[] coords1 = block1.getCoordinates();
             double[] coords2 = block2.getCoordinates();
             
             // 判断块是在左侧还是右侧
             // 如果块的x坐标加宽度超过中心，则认为是左侧块
-            boolean isBlock1Left = coords1[0]  < pageCenterX || coords1[2] > pageCenterX ;
-            boolean isBlock2Left = coords2[0]  < pageCenterX ||  coords2[2] > pageCenterX;
+            boolean isBlock1Left = coords1[0]  < pageCenterX ;
+            boolean isBlock2Left = coords2[0]  < pageCenterX ;
             
             // 如果两个块都在左侧或都在右侧，则按y坐标升序排序
             if (isBlock1Left == isBlock2Left) {
