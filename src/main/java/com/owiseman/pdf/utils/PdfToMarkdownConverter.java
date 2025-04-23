@@ -31,6 +31,65 @@ import java.util.Collections;
 import java.util.List;
 
 public class PdfToMarkdownConverter {
+    public  PdfBlockDto convert(PDDocument document, List<PdfBlock> blocks, int pageNumber) {
+        StringBuilder md = new StringBuilder();
+        PdfBlockDto pdfBlockDto = new PdfBlockDto();
+         try  {
+            pdfBlockDto.setDocument(document);
+            var sortedBlocks = sortBlocks(blocks, document.getPage(0).getMediaBox().getWidth());
+            for (PdfBlock block : sortedBlocks) {
+                // 按页面号匹配（假设 blocks 已按页面分组）
+                PDPage page = document.getPage(pageNumber); // 示例仅处理第一页
+                block.extractTextFromPage(page);
+                String titleLevel = "";
+                // 生成 Markdown
+                switch (block.getType()) {
+                    case "title" -> {
+                        if (block.getHeight() > 32)
+                            titleLevel = "# ";
+                        else if (block.getHeight() >= 24 && block.getHeight() < 32)
+                            titleLevel = "## ";
+                        else if (block.getHeight() < 24 && block.getHeight() >= 16)
+                            titleLevel = "### ";
+                        else if (block.getHeight() < 16 && block.getHeight() >= 8)
+                            titleLevel = "#### ";
+                        else if (block.getHeight() < 8)
+                            titleLevel = "##### ";
+                        if (block.getExtractedText().contains("\r") || block.getExtractedText().contains("\n")) {
+                            var extStr = block.getExtractedText().replaceAll("\r", " ");
+                            extStr = extStr.replaceAll("\n", " ");
+                            extStr = extStr.replaceAll(" {2}", " ");
+                            md.append(titleLevel).append(extStr).append("\n");
+                        } else {
+                            md.append(titleLevel).append(block.getExtractedText()).append("\n\n");
+                        }
+                    }
+
+                    case "plain text", "figure_caption" -> {
+                        md.append(block.getExtractedText()).append("\n\n");
+                    }
+
+                    case "table" -> {
+                        md.append(pdfBoxTableExtractor(block, pdfBlockDto.getDocument(), pageNumber))
+                                .append("\n\n");
+                    }
+                    case "isolate_formula" -> {
+                        md.append(pdfBoxTableExtractor(block, pdfBlockDto.getDocument(), pageNumber))
+                                .append("\n\n");
+                    }
+
+                    case "figure" -> {
+                        md.append(extractImageInArea(block, page))
+                                .append("\n\n");
+                    }
+                }
+            }
+        } catch (IOException e) {
+             throw new RuntimeException(e);
+         }
+        pdfBlockDto.setMarkdownString(md.toString());
+        return pdfBlockDto;
+    }
     public PdfBlockDto convert(String pdfPath, List<PdfBlock> blocks, int pageNumber) throws IOException {
         StringBuilder md = new StringBuilder();
         PdfBlockDto pdfBlockDto = new PdfBlockDto();
