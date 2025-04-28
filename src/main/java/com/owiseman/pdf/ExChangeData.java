@@ -6,17 +6,17 @@ public interface ExChangeData {
     /**
      * send text to exchange vector, and insert to database
      */
-    default void sendTextToExChangeVector(Optional<String> UserId, Optional<String> projectId, String text) {
+    default void sendTextToExChangeVector(Optional<String> UserId, Optional<String> projectId, Optional<String> fileId, String text) {
     };
 
     /**
      * @param image base64 encoded image
      */
-    default void sendImageToExChangeVector(Optional<String> UserId, Optional<String> projectId, String image) {
+    default void sendImageToExChangeVector(Optional<String> UserId, Optional<String> projectId, Optional<String> fileId, String image) {
     };
 
     /**
      * @param formula base64 encoded image
      */
-     String sendFormulaToExChangeVector(Optional<String> UserId, Optional<String> projectId, String formula);
+     String sendFormulaToExChangeVector(Optional<String> UserId, Optional<String> projectId, Optional<String> fileId, String formula);
 }

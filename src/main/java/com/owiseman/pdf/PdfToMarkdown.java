@@ -18,7 +18,7 @@ import java.util.Optional;
 public class PdfToMarkdown {
 
     public static Path pdfToMarkdown(PDDocument document, PdfLayoutDto pdfLayoutDto, Optional<ExChangeData> exChangeData,
-                                     Optional<String> userId, Optional<String> projectId) {
+                                     Optional<String> userId, Optional<String> projectId, Optional<String> fileId) {
         StringBuilder markdownBuilder = new StringBuilder();
         try {
             PdfToMarkdownConverter converter = new PdfToMarkdownConverter();
@@ -35,13 +35,13 @@ public class PdfToMarkdown {
                     if (pageLayout.getLayoutList().get(pageNumber).getType()!= PdfLayoutType.ABANDON) {
                         switch (pageLayout.getLayoutList().get(pageNumber).getType()) {
                             case PdfLayoutType.FIGURE -> {
-                                exChangeData.get().sendImageToExChangeVector(userId, projectId,  pdfBlockDto.getMarkdownString());
+                                exChangeData.get().sendImageToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString());
                             }
                             case PdfLayoutType.ISOLATE_FORMULA -> {
-                                exChangeData.get().sendFormulaToExChangeVector(userId, projectId,  pdfBlockDto.getMarkdownString());
+                                exChangeData.get().sendFormulaToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString());
                             }
                             default -> {
-                                exChangeData.get().sendTextToExChangeVector(userId, projectId,  pdfBlockDto.getMarkdownString());
+                                exChangeData.get().sendTextToExChangeVector(userId, projectId,  fileId, pdfBlockDto.getMarkdownString());
                             }
                         }
                     }
