@@ -12,6 +12,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
 import org.apache.pdfbox.util.Matrix;
 import technology.tabula.ObjectExtractor;
@@ -31,10 +32,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class PdfToMarkdownConverter {
-    public  PdfBlockDto convert(PDDocument document, List<PdfBlock> blocks, int pageNumber) {
+    public PdfBlockDto convert(PDDocument document, List<PdfBlock> blocks, int pageNumber) {
         StringBuilder md = new StringBuilder();
         PdfBlockDto pdfBlockDto = new PdfBlockDto();
-         try  {
+        try {
             pdfBlockDto.setDocument(document);
             var sortedBlocks = sortBlocks(blocks, document.getPage(0).getMediaBox().getWidth());
             for (PdfBlock block : sortedBlocks) {
@@ -74,7 +75,7 @@ public class PdfToMarkdownConverter {
                                 .append("\n\n");
                     }
                     case "isolate_formula" -> {
-                        md.append(pdfBoxTableExtractor(block, pdfBlockDto.getDocument(), pageNumber))
+                        md.append(extractAnyAreaToImage(block, pdfBlockDto.getDocument(), pageNumber))
                                 .append("\n\n");
                     }
 
@@ -85,11 +86,12 @@ public class PdfToMarkdownConverter {
                 }
             }
         } catch (IOException e) {
-             throw new RuntimeException(e);
-         }
+            throw new RuntimeException(e);
+        }
         pdfBlockDto.setMarkdownString(md.toString());
         return pdfBlockDto;
     }
+
     public PdfBlockDto convert(String pdfPath, List<PdfBlock> blocks, int pageNumber) throws IOException {
         StringBuilder md = new StringBuilder();
         PdfBlockDto pdfBlockDto = new PdfBlockDto();
@@ -260,11 +262,11 @@ public class PdfToMarkdownConverter {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", byteArrayOutputStream); // 使用 PNG 格式保存
         // 写入图片原始数据
-        var imageBase64 =   Base64.encodeBase64String(byteArrayOutputStream.toByteArray());
+        var imageBase64 = Base64.encodeBase64String(byteArrayOutputStream.toByteArray());
         String markdown = String.format(
-                            "<img src=\"data:image/%s;base64,%s\" width=\"%d\" height=\"%d\">",
-                            image.getSuffix(), imageBase64, image.getWidth(),image.getHeight()
-                        );
+                "<img src=\"data:image/%s;base64,%s\" width=\"%d\" height=\"%d\">",
+                image.getSuffix(), imageBase64, image.getWidth(), image.getHeight()
+        );
         return markdown;
     }
 
@@ -299,6 +301,7 @@ public class PdfToMarkdownConverter {
             this.height = height;
         }
     }
+
 
     public static String extractImageInArea(PdfBlock pdfBlock, PDPage page) {
         PDResources resources = page.getResources();
@@ -337,6 +340,27 @@ public class PdfToMarkdownConverter {
     }
 
     /// /////////// 处理矢量图的部分
+    // todo 寻找到更好的工具再进行更新
+
 
     /// /////////// 下面的部分是用来处理公式的
+    public static String extractAnyAreaToImage(PdfBlock pdfBlock, PDDocument document, int pageNumber) {
+        PDPage page = document.getPage(pageNumber);
+        PDFRenderer renderer = new PDFRenderer(document);
+        try {
+            BufferedImage fullImage = renderer.renderImage(pageNumber);
+            // 裁剪图像
+            BufferedImage subImage = fullImage.getSubimage((int) pdfBlock.getX(), (int) pdfBlock.getY(),
+                    (int) pdfBlock.getWidth(), (int) pdfBlock.getHeight());
+
+            // 将图像转换为字节数组（PNG格式）
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(subImage, "PNG", baos);
+            byte[] imageBytes = baos.toByteArray();
+
+            return Base64.encodeBase64String(imageBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

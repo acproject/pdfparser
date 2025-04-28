@@ -37,6 +37,9 @@ public class PdfToMarkdown {
                             case PdfLayoutType.FIGURE -> {
                                 exChangeData.get().sendImageToExChangeVector(userId, projectId,  pdfBlockDto.getMarkdownString());
                             }
+                            case PdfLayoutType.ISOLATE_FORMULA -> {
+                                exChangeData.get().sendFormulaToExChangeVector(userId, projectId,  pdfBlockDto.getMarkdownString());
+                            }
                             default -> {
                                 exChangeData.get().sendTextToExChangeVector(userId, projectId,  pdfBlockDto.getMarkdownString());
                             }

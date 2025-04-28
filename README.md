@@ -7,7 +7,7 @@
 mvn install:install-file \
 -Dfile=target/pdfparser-1.0.jar  \
 -DgroupId=com.owiseman \
--DartifactId=jpa-codegen-jooq \
+-DartifactId=pdfparser \
 -Dversion=1.0 \
 -Dpackaging=jar \
 -DgeneratePom=true
