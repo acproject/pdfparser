@@ -1,8 +1,9 @@
 package com.owiseman.pdf.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.owiseman.pdf.Enum.PdfLayoutType;
-import com.owiseman.pdf.model.PagesLayout;
+
+import com.owiseman.pdf.model.PageLayout;
+
 
 import java.util.List;
 
@@ -11,9 +12,9 @@ public class PdfLayoutDto {
     private Integer totalPages;
 
     @JsonProperty("pages_layout")
-    private List<PagesLayout> PagesLayout;
+    private List<PageLayout> PagesLayout;
 
-    public PdfLayoutDto(Integer totalPages, List<PagesLayout> pagesLayout) {
+    public PdfLayoutDto(Integer totalPages, List<PageLayout> pagesLayout) {
         this.totalPages = totalPages;
         PagesLayout = pagesLayout;
     }
@@ -29,11 +30,11 @@ public class PdfLayoutDto {
         this.totalPages = totalPages;
     }
 
-    public List<PagesLayout> getPagesLayout() {
+    public List<PageLayout> getPagesLayout() {
         return PagesLayout;
     }
 
-    public void setPagesLayout(List<PagesLayout> pagesLayout) {
+    public void setPagesLayout(List<PageLayout> pagesLayout) {
         PagesLayout = pagesLayout;
     }
 }

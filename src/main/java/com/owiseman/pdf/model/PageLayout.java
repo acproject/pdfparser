@@ -4,26 +4,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class PagesLayout {
+public class PageLayout {
     @JsonProperty("page_number")
     private Integer pageNumber;
     @JsonProperty("page_size")
-    private Integer[] pageSize;
+    private Integer pageSize;
     @JsonProperty("layout")
     private List<Layout> layoutList;
 
-    public PagesLayout(Integer pageNumber, Integer[] pageSize) {
+    public PageLayout(Integer pageNumber, Integer pageSize) {
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
     }
 
-    public PagesLayout(Integer pageNumber, Integer[] pageSize, List<Layout> layoutList) {
+    public PageLayout(Integer pageNumber, Integer pageSize, List<Layout> layoutList) {
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
         this.layoutList = layoutList;
     }
 
-    public PagesLayout() {
+    public PageLayout() {
     }
 
     public Integer getPageNumber() {
@@ -34,11 +34,11 @@ public class PagesLayout {
         this.pageNumber = pageNumber;
     }
 
-    public Integer[] getPageSize() {
+    public Integer getPageSize() {
         return pageSize;
     }
 
-    public void setPageSize(Integer[] pageSize) {
+    public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
 
