@@ -7,17 +7,21 @@ import java.util.List;
 public class PageLayout {
     @JsonProperty("page_number")
     private Integer pageNumber;
+    // page_size": [
+    //                2481,
+    //                3296
+    //            ],
     @JsonProperty("page_size")
-    private Integer pageSize;
+    private Integer[] pageSize;
     @JsonProperty("layout")
     private List<Layout> layoutList;
 
-    public PageLayout(Integer pageNumber, Integer pageSize) {
+    public PageLayout(Integer pageNumber, Integer[] pageSize) {
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
     }
 
-    public PageLayout(Integer pageNumber, Integer pageSize, List<Layout> layoutList) {
+    public PageLayout(Integer pageNumber, Integer[] pageSize, List<Layout> layoutList) {
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
         this.layoutList = layoutList;
@@ -34,11 +38,11 @@ public class PageLayout {
         this.pageNumber = pageNumber;
     }
 
-    public Integer getPageSize() {
+    public Integer[] getPageSize() {
         return pageSize;
     }
 
-    public void setPageSize(Integer pageSize) {
+    public void setPageSize(Integer[] pageSize) {
         this.pageSize = pageSize;
     }
 
