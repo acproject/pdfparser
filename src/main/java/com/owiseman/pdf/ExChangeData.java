@@ -18,5 +18,6 @@ public interface ExChangeData {
     /**
      * @param formula base64 encoded image
      */
-     String sendFormulaToExChangeVector(Optional<String> UserId, Optional<String> projectId, Optional<String> fileId, String formula);
+     default void sendFormulaToExChangeVector(Optional<String> UserId, Optional<String> projectId, Optional<String> fileId, String formula){
+     };
 }
