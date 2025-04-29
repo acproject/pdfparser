@@ -1,7 +1,10 @@
 package com.owiseman.pdf.Enum;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum PdfLayoutType {
-    PLAIN_TEXT("plain text:", "(0, 200, 0)"),
+    PLAIN_TEXT("plain text", "(0, 200, 0)"),
     TITLE("title", "(255, 0, 0)"),
     FIGURE("figure", "(0, 0, 255)"),
     TABLE("table", "(255, 165, 0)"),
@@ -22,6 +25,17 @@ public enum PdfLayoutType {
         this.color = color;
     }
 
+    @JsonCreator
+    public static PdfLayoutType fromValue(String value) {
+        for (PdfLayoutType type : values()) {
+            if (type.type.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
+    @JsonValue
     public String getType() {
         return type;
     }

@@ -2,10 +2,12 @@ package com.owiseman.pdf.model;
 
 import com.owiseman.pdf.Enum.PdfLayoutType;
 
+import java.util.Arrays;
+
 public class Layout {
-        private PdfLayoutType type;
-        private Integer[] coordinates;
-        private Double confidence;
+    private PdfLayoutType type;
+    private Integer[] coordinates;
+    private Double confidence;
 
     public Layout(PdfLayoutType type, Integer[] coordinates, Double confidence) {
 
@@ -13,6 +15,10 @@ public class Layout {
         this.coordinates = coordinates;
         this.confidence = confidence;
     }
+
+    public Layout() {
+    }
+
 
     public PdfLayoutType getType() {
         return type;
@@ -36,5 +42,14 @@ public class Layout {
 
     public void setConfidence(Double confidence) {
         this.confidence = confidence;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "type: " + type +
+                ", coordinates: " + Arrays.toString(coordinates) +
+                ", confidence: " + confidence +
+                '}';
     }
 }

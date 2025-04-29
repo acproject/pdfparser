@@ -27,7 +27,7 @@ public class PdfToMarkdown {
             for (PageLayout pageLayout : pdfLayoutDto.getPagesLayout()) {
                 int pageNumber = pageLayout.getPageNumber();
 
-                List<PdfBlock> blocks = JsonToPdfBlockParser.parse(pageLayout.getLayoutList().get(pageNumber).toString());
+                List<PdfBlock> blocks = JsonToPdfBlockParser.parse(pageLayout.getLayoutList());
 
                 PdfBlockDto pdfBlockDto = converter.convert(document, blocks, pageNumber);
                 // 如果服务端传递了接口的实现，则执行下面的操作
