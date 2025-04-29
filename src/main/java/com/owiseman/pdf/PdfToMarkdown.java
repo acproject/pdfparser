@@ -4,6 +4,7 @@ import com.owiseman.pdf.Enum.PdfLayoutType;
 import com.owiseman.pdf.dto.PdfBlockDto;
 import com.owiseman.pdf.dto.PdfLayoutDto;
 
+import com.owiseman.pdf.model.Layout;
 import com.owiseman.pdf.model.PageLayout;
 import com.owiseman.pdf.utils.JsonToPdfBlockParser;
 import com.owiseman.pdf.utils.PdfToMarkdownConverter;
@@ -35,13 +36,13 @@ public class PdfToMarkdown {
                     if (pageLayout.getLayoutList().get(pageNumber).getType()!= PdfLayoutType.ABANDON) {
                         switch (pageLayout.getLayoutList().get(pageNumber).getType()) {
                             case PdfLayoutType.FIGURE -> {
-                                exChangeData.get().sendImageToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString());
+                                exChangeData.get().sendImageToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString(),Optional.of(pageLayout.getLayoutList().get(pageNumber)));
                             }
                             case PdfLayoutType.ISOLATE_FORMULA -> {
-                                exChangeData.get().sendFormulaToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString());
+                                exChangeData.get().sendFormulaToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString(),Optional.of(pageLayout.getLayoutList().get(pageNumber)));
                             }
                             default -> {
-                                exChangeData.get().sendTextToExChangeVector(userId, projectId,  fileId, pdfBlockDto.getMarkdownString());
+                                exChangeData.get().sendTextToExChangeVector(userId, projectId,  fileId, pdfBlockDto.getMarkdownString(),Optional.of(pageLayout.getLayoutList().get(pageNumber)));
                             }
                         }
                     }
