@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PdfToMarkdownConverter {
-    private static final int COMPENSATION_VALUE = 72;
+    private static final int COMPENSATION_VALUE = 10;
     public PdfBlockDto convert(PDDocument document, List<PdfBlock> blocks, int pageNumber) {
         StringBuilder md = new StringBuilder();
         PdfBlockDto pdfBlockDto = new PdfBlockDto();
@@ -404,7 +404,7 @@ public class PdfToMarkdownConverter {
             BufferedImage fullImage = renderer.renderImage(pageNumber,2.0f); // 模型放大了2倍（矩阵是2倍）
             // 裁剪图像
             BufferedImage subImage = fullImage.getSubimage((int)pdfBlock.getX()-COMPENSATION_VALUE, (int)(pdfBlock.getY()-pdfBlock.getHeight()-COMPENSATION_VALUE),
-                    (int) (pdfBlock.getWidth()-pdfBlock.getX()), (int) (pdfBlock.getHeight()));
+                    (int) (pdfBlock.getWidth()-pdfBlock.getX()), (int) (pdfBlock.getHeight())+COMPENSATION_VALUE);
 
             // 将图像转换为字节数组（PNG格式）
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
