@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PdfToMarkdownConverter {
-    private static final int COMPENSATION_VALUE = 10;
+    private static final int COMPENSATION_VALUE = 11;
     public PdfBlockDto convert(PDDocument document, List<PdfBlock> blocks, int pageNumber) {
         StringBuilder md = new StringBuilder();
         PdfBlockDto pdfBlockDto = new PdfBlockDto();
