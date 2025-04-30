@@ -13,6 +13,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,28 +30,37 @@ public class PdfToMarkdown {
                 int pageNumber = pageLayout.getPageNumber();
 
                 List<PdfBlock> blocks = JsonToPdfBlockParser.parse(pageLayout.getLayoutList());
-
+                // 这里完成一页的转换，得到pdfBlockDto
                 PdfBlockDto pdfBlockDto = converter.convert(document, blocks, pageNumber);
                 // 如果服务端传递了接口的实现，则执行下面的操作
-                if (exChangeData.isPresent()) {
-                    if (pageLayout.getLayoutList().get(pageNumber).getType()!= PdfLayoutType.ABANDON) {
-                        switch (pageLayout.getLayoutList().get(pageNumber).getType()) {
-                            case PdfLayoutType.FIGURE -> {
-                                exChangeData.get().sendImageToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString(),Optional.of(pageLayout.getLayoutList().get(pageNumber)));
-                            }
-                            case PdfLayoutType.ISOLATE_FORMULA -> {
-                                exChangeData.get().sendFormulaToExChangeVector(userId, projectId, fileId,  pdfBlockDto.getMarkdownString(),Optional.of(pageLayout.getLayoutList().get(pageNumber)));
-                            }
-                            default -> {
-                                exChangeData.get().sendTextToExChangeVector(userId, projectId,  fileId, pdfBlockDto.getMarkdownString(),Optional.of(pageLayout.getLayoutList().get(pageNumber)));
+                for (var page : pageLayout.getLayoutList()) {
+                    if (exChangeData.isPresent()) {
+                        // 过滤掉放弃的页面, 并且处理笔记特殊的格式
+                        if (page.getType() != PdfLayoutType.ABANDON) {
+                            switch (page.getType()) {
+                                case PdfLayoutType.FIGURE -> {
+                                    var pageblocks = JsonToPdfBlockParser.parse(Arrays.asList(page));
+                                    var pageBlocksDto = converter.convert(document, pageblocks, pageNumber);
+                                    exChangeData.get().sendImageToExChangeVector(userId, projectId, fileId, pageBlocksDto.getMarkdownString(), Optional.of(page));
+                                }
+                                case PdfLayoutType.ISOLATE_FORMULA -> {
+                                    var pageblocks = JsonToPdfBlockParser.parse(Arrays.asList(page));
+                                    var pageBlocksDto = converter.convert(document, pageblocks, pageNumber);
+                                    exChangeData.get().sendFormulaToExChangeVector(userId, projectId, fileId, pageBlocksDto.getMarkdownString(), Optional.of(page));
+                                }
                             }
                         }
                     }
                 }
+                if (exChangeData.isPresent()) {
+                    exChangeData.get().sendTextToExChangeVector(userId, projectId,
+                            fileId, pdfBlockDto.getMarkdownString() ,Optional.empty(), Optional.of(pageLayout.getLayoutList()));
+                }
                 markdownBuilder.append(pdfBlockDto.getMarkdownString());
+
             }
             return Files.write(Paths.get("/tmp/output.md"), markdownBuilder.toString().getBytes());
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
