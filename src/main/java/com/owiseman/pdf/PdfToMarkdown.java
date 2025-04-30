@@ -31,11 +31,12 @@ public class PdfToMarkdown {
 
                 List<PdfBlock> blocks = JsonToPdfBlockParser.parse(pageLayout.getLayoutList());
                 // 这里完成一页的转换，得到pdfBlockDto
-                PdfBlockDto pdfBlockDto = converter.convert(document, blocks, pageNumber);
+
                 // 如果服务端传递了接口的实现，则执行下面的操作
+                // 如果当前页面有图片则进行下面的处理
                 for (var page : pageLayout.getLayoutList()) {
                     if (exChangeData.isPresent()) {
-                        // 过滤掉放弃的页面, 并且处理笔记特殊的格式
+                        // 过滤掉放弃的页面
                         if (page.getType() != PdfLayoutType.ABANDON) {
                             switch (page.getType()) {
                                 case PdfLayoutType.FIGURE -> {
@@ -52,6 +53,7 @@ public class PdfToMarkdown {
                         }
                     }
                 }
+                PdfBlockDto pdfBlockDto = converter.convertNoneImg(document, blocks, pageNumber);
                 if (exChangeData.isPresent()) {
                     exChangeData.get().sendTextToExChangeVector(userId, projectId,
                             fileId, pdfBlockDto.getMarkdownString() ,Optional.empty(), Optional.of(pageLayout.getLayoutList()));
