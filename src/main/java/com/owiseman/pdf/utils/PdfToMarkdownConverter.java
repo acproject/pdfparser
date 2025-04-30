@@ -403,7 +403,7 @@ public class PdfToMarkdownConverter {
         try {
             BufferedImage fullImage = renderer.renderImage(pageNumber,2.0f); // 模型放大了2倍（矩阵是2倍）
             // 裁剪图像
-            BufferedImage subImage = fullImage.getSubimage((int)pdfBlock.getX()-COMPENSATION_VALUE, (int)(pdfBlock.getY()-pdfBlock.getHeight()+COMPENSATION_VALUE),
+            BufferedImage subImage = fullImage.getSubimage((int)pdfBlock.getX()-COMPENSATION_VALUE-COMPENSATION_VALUE, (int)(pdfBlock.getY()-pdfBlock.getHeight()+COMPENSATION_VALUE),
                     (int) (pdfBlock.getWidth()-pdfBlock.getX()), (int) (pdfBlock.getHeight()+COMPENSATION_VALUE));
 
             // 将图像转换为字节数组（PNG格式）
