@@ -28,4 +28,21 @@ public class JsonToPdfBlockParser {
         return pdfBlockList;
     }
 
+    public static List<PdfBlock> parseOneBlock(Layout layout) throws Exception {
+
+
+        PdfBlock pdfBlock = new PdfBlock(
+                layout.getType().getType(),
+                new double[]{
+                        layout.getCoordinates()[0],
+                        layout.getCoordinates()[1],
+                        layout.getCoordinates()[2],
+                        layout.getCoordinates()[3]},
+                layout.getConfidence()
+        );
+        List<PdfBlock> blocks = new ArrayList<>();
+        blocks.add(pdfBlock);
+        return blocks;
+    }
+
 }

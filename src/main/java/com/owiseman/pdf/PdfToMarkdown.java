@@ -45,7 +45,7 @@ public class PdfToMarkdown {
                                     exChangeData.get().sendImageToExChangeVector(userId, projectId, fileId, pageBlocksDto.getMarkdownString(), Optional.of(page));
                                 }
                                 case PdfLayoutType.ISOLATE_FORMULA -> {
-                                    var pageblocks = JsonToPdfBlockParser.parse(Arrays.asList(page));
+                                    var pageblocks = JsonToPdfBlockParser.parseOneBlock(page);
                                     var pageBlocksDto = converter.convert(document, pageblocks, pageNumber);
                                     exChangeData.get().sendFormulaToExChangeVector(userId, projectId, fileId, pageBlocksDto.getMarkdownString(), Optional.of(page));
                                 }
