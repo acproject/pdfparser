@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PdfToMarkdownConverter {
-    private static final int COMPENSATION_VALUE = 11;
+//    private static final int COMPENSATION_VALUE = 11;
     public PdfBlockDto convert(PDDocument document, List<PdfBlock> blocks, int pageNumber) {
         StringBuilder md = new StringBuilder();
         PdfBlockDto pdfBlockDto = new PdfBlockDto();
@@ -81,7 +81,7 @@ public class PdfToMarkdownConverter {
                     }
 
                     case "figure" -> {
-                        md.append(extractImageInArea(block, page))
+                        md.append(extractAnyAreaToImage(block,  pdfBlockDto.getDocument(), pageNumber))
                                 .append("\n\n");
                     }
                 }
@@ -403,8 +403,9 @@ public class PdfToMarkdownConverter {
         try {
             BufferedImage fullImage = renderer.renderImage(pageNumber,2.0f); // 模型放大了2倍（矩阵是2倍）
             // 裁剪图像
-            BufferedImage subImage = fullImage.getSubimage((int)pdfBlock.getX()-COMPENSATION_VALUE-COMPENSATION_VALUE, (int)(pdfBlock.getY()-pdfBlock.getHeight()+COMPENSATION_VALUE),
-                    (int) (pdfBlock.getWidth()-pdfBlock.getX()), (int) (pdfBlock.getHeight()+COMPENSATION_VALUE));
+            BufferedImage subImage = fullImage.getSubimage((int)pdfBlock.getX(),(int)pdfBlock.getY(),
+                    (int) Math.abs((pdfBlock.getCoordinates()[2]-pdfBlock.getCoordinates()[0])/2),
+                    (int) Math.abs((pdfBlock.getCoordinates()[3]- pdfBlock.getCoordinates()[1]))/2);
 
             // 将图像转换为字节数组（PNG格式）
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
