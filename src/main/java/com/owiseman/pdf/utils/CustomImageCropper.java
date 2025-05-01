@@ -26,7 +26,7 @@ public class CustomImageCropper {
 
         // 1. 修正起始点坐标（不能为负数）
         int safeX = Math.max(0, x-30);
-        int safeY = Math.max(0, y-46);
+        int safeY = Math.max(0, y-42);
 
         // 2. 计算实际可用的宽度和高度
         int remainingWidth = srcWidth - safeX;  // 原图剩余宽度
