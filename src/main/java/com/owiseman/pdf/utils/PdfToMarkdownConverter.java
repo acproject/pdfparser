@@ -398,14 +398,15 @@ public class PdfToMarkdownConverter {
 
     /// /////////// 下面的部分是用来处理公式的
     public static String extractAnyAreaToImage(PdfBlock pdfBlock, PDDocument document, int pageNumber) {
-        PDPage page = document.getPage(pageNumber);
         PDFRenderer renderer = new PDFRenderer(document);
         try {
             BufferedImage fullImage = renderer.renderImage(pageNumber,2.0f); // 模型放大了2倍（矩阵是2倍）
             // 裁剪图像
-            BufferedImage subImage = fullImage.getSubimage((int)pdfBlock.getX(),(int)pdfBlock.getY(),
-                    (int) Math.abs((pdfBlock.getCoordinates()[2]-pdfBlock.getCoordinates()[0])/2),
-                    (int) Math.abs((pdfBlock.getCoordinates()[3]- pdfBlock.getCoordinates()[1]))/2);
+            BufferedImage subImage = CustomImageCropper.cropWithMaxSize(fullImage,
+                    (int)pdfBlock.getX(),
+                    (int)pdfBlock.getY(),
+                    (int)pdfBlock.getWidth(),
+                    (int)pdfBlock.getHeight());
 
             // 将图像转换为字节数组（PNG格式）
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
