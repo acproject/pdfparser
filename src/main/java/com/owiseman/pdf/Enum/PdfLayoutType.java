@@ -13,6 +13,7 @@ public enum PdfLayoutType {
     ISOLATE_FORMULA("isolate_formula", "(128, 0, 128)"),
     LIST("list", "(0, 255, 255)"),
     FIGURE_CAPTION("figure_caption", "(0, 20, 45)"),
+    FORMULA_CAPTION("formula_caption", "(0, 0, 45)"),
     ABANDON("abandon", "(100, 100, 100)"),
     HEADER("header", "(255, 105, 180)"),
     FOOTER("footer", "(100, 149, 237)");
